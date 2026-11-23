@@ -1,0 +1,38 @@
+name: Testes da API
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: local-ci-root
+          MYSQL_DATABASE: digital_store_test
+          MYSQL_USER: digital_store
+          MYSQL_PASSWORD: local-ci-password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 --silent"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=15
+    env:
+      DB_HOST: 127.0.0.1
+      DB_NAME: digital_store_test
+      DB_USER: digital_store
+      DB_PASSWORD: local-ci-password
+      JWT_SECRET: local-ci-signing-key-only-for-tests
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run db:migrate
+      - run: npm run test:integration

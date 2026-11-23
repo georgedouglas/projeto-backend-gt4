@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form>
+        <label for="email">
+            <input type="text" id="email" name="email">
+        </label>
+        <label for="password">
+            <input type="password" name="password" id="password">
+        </label>
+        <button>Login</button>
+    </form>
+    <button id="getData">View</button>
+    <script>
+        const form = document.querySelector("form");
+        const button = document.querySelector("#getData");
+
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            const dataForm = Object.fromEntries(formData);
+
+            const fetchData = await fetch("http://localhost:3000/v1/lgoin", {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "Application/json"
+                },
+                body: JSON.stringify(dataForm)
+            });
+
+            const data = await fetchData.json()
+            console.log(data)
+        })
+    </script>
+</body>
+</html>
